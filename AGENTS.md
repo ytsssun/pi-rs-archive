@@ -14,4 +14,6 @@ This is the target boundary, not a claim that migration is complete. The current
 
 Judge progress by Rust's control of runtime behavior and reproducible Pi compatibility, not Rust/JS line counts. Update the architecture map when ownership changes. See [checkpoint](docs/checkpoint.md) for the current migration acceptance criteria.
 
+The long-term target is Rust-first implementation with a thin Node compatibility host. Preserve Pi contracts for extensions and providers, but do not preserve upstream implementations merely for language purity. Before deleting an upstream implementation, add contract, extension/provider, failure, and fresh-process recovery evidence as specified in [the Rust-first architecture decision](docs/architecture-decision-rust-first.md).
+
 For milestone selection, delegation, CI integration, or recovery after a worker failure, follow [the coordinator contract](docs/coordinator.md).

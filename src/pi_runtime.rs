@@ -235,6 +235,18 @@ impl PiRuntime {
             }
             return Ok(Value::Null);
         }
+        if op == "adopt_context" {
+            let pending = self.waiting.as_ref().context("context adoption requires a pending model request")?;
+            if pending.0 != "model" || request["requestId"] != pending.1 {
+                bail!("context adoption requires the current model request id");
+            }
+            let messages = request["messages"].as_array().context("context messages required")?;
+            if messages.iter().any(|message| !message.is_object() || message["role"].as_str().is_none() || message.get("content").is_none()) {
+                bail!("context messages require role and content");
+            }
+            // A request-scoped model view, never a persistent override for later turns.
+            return Ok(json!({"requestId":pending.1,"messages":messages}));
+        }
         if op == "pending_custom" {
             return Ok(json!(self.custom_messages));
         }

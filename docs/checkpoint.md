@@ -1,5 +1,15 @@
 # Current checkpoint
 
+## Product direction
+
+The preferred distribution strategy is now a Pi fork: preserve upstream package names and `coding-agent` entry points, replace `packages/agent` behind its public contract with Rust, and gradually replace other implementations behind compatibility tests. The current loader-based experimental path is migration scaffolding, not the desired released architecture. See [fork strategy](fork-strategy.md).
+
+## Active review gate
+
+Latest candidate scopes adopt_context to a pending model request with exact request ID, returns the Rust-admitted view for actual provider use, and removes the stale persistent override. Rust invalid/stale/idle admission and unchanged history tests pass; nonempty/empty Agent replacement and retry fixtures pass. Full Session.compact/resume remains required before PR72 integration.
+
+PR72 (`058efca`) is not ready to merge despite green CI. Its JavaScript context selection passes the direct nonempty and empty state-replacement diagnostics, but does not implement the frozen Rust-owned context adoption contract. Full Session.compact, restored compaction and history invariants remain untested. The previous message calling this fixed was too broad. Preserve the candidate for comparison; replace its policy selection with a Rust admission/projection operation before integration. PR71 merge `fde5058` CI35307243243 succeeded.
+
 ## Current verified status
 
 The installed CLI is still the custom pi-rs path. The experimental Agent adapter runs unchanged upstream CLI/AgentSession with Rust scheduling and original providers/tools; it is not a complete replacement or the installed default.
@@ -28,7 +38,7 @@ Custom message-array admission now passes installed-entry upstream comparison us
 
 Image attachment wire/resume comparison now passes original Pi and installed Rust-core entry at base `11f19d1` plus harness changes. A valid one-pixel PNG enters through original `@file` handling; all four HTTP requests preserve its data URL, canonical history retains exactly one image, and a second process restores it without reattaching. Commands: `node --experimental-strip-types experiments/upstream-cli-provider-probe.mjs --image --upstream` and `--image --binary /tmp/pi-rs-installed-probe/bin/pi-rs`. Deterministic fixture only; visual reasoning remains unverified. The earlier adapter fixture used base64 for “hello”, not a valid PNG, and checked memory rather than disk persistence; that claim is superseded by this stronger test.
 
-Next: await exact-head CI for PR71 before integration, then test original Session compaction/context replacement against the Rust adapter. Image-only prompts remain unsupported. Do not treat this attachment test as full multimodal parity.
+PR71 merged as `fde5058` after exact-head runs 35304972689 and 35304970775 succeeded. Merge CI remains to be checked. Next blocking finding: `node --experimental-strip-types experiments/agent-context-replacement-audit.mjs` exits 1: original Agent sends replacement summary plus new user; Rust sends old user/assistant plus new user. Upstream manual compact assigns `agent.state.messages` in agent-session.ts; this diagnostic exercises that assignment, not full compaction. Frozen fix acceptance: explicit Rust-owned context adoption, no canonical history rewriting, correct subsequent model context, original Session compact/new-process resume coverage, and retry/queue regressions. Preserve the failing diagnostic until fixed. Image-only prompts remain unsupported. Do not treat this attachment test as full multimodal parity.
 
 ## Limits and recovery
 

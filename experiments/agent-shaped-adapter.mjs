@@ -59,7 +59,13 @@ export class RustAgentAdapter {
         if(action.type==='model'){
           const messageCount=this.state.messages.length;
           try{
-          const context={systemPrompt:this.state.systemPrompt,messages:action.contextEntries.flatMap(sessionEntryToContextMessages),tools:this.state.tools};
+          const runtimeMessages=action.contextEntries.flatMap(sessionEntryToContextMessages);
+          // Rust explicitly owns adoption of upstream compaction/branch context views.
+          let contextMessages=runtimeMessages;
+          if(JSON.stringify(this.state.messages)!==JSON.stringify(contextMessages)){
+            contextMessages=this.step({event:'adopt_context',requestId:action.requestId,messages:this.state.messages}).messages;
+          }
+          const context={systemPrompt:this.state.systemPrompt,messages:contextMessages,tools:this.state.tools};
           const refreshed=await (this.prepareNextTurnWithContext?this.prepareNextTurnWithContext({context,turnIndex:0},this.signal):this.prepareNextTurn?.(this.signal));
           // Reject unsupported compaction instead of silently diverging from Rust history.
           if(JSON.stringify(refreshed?.context?.messages??context.messages)!==JSON.stringify(context.messages))throw Error('Unsupported: context history replacement');
